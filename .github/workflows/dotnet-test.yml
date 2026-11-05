@@ -1,0 +1,77 @@
+name: dotnet-test
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths:
+      - 'src/**'
+      - 'docs/**'
+      - 'README*.md'
+      - 'LICENSE'
+      - '*.slnx'
+      - '.editorconfig'
+      - '.github/workflows/dotnet-test.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'docs/**'
+      - 'README*.md'
+      - 'LICENSE'
+      - '*.slnx'
+      - '.editorconfig'
+      - '.github/workflows/dotnet-test.yml'
+  workflow_dispatch: {}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+    # ghasec-ignore: unpinned-action
+    - uses: AndanteTribe/Actions/actions/checkout@main # zizmor: ignore[unpinned-uses] repository-local action reference is intentionally tracked on @main
+      with:
+        fetch-depth: 0
+    # ghasec-ignore: unpinned-action
+    - uses: AndanteTribe/Actions/actions/setup-dotnet@main # zizmor: ignore[unpinned-uses] repository-local action reference is intentionally tracked on @main
+      with:
+        dotnet-version: '10.0.x'
+    - run: dotnet restore UnityNamespaceSuppressor.slnx
+    - run: dotnet build UnityNamespaceSuppressor.slnx --configuration Release --no-restore -warnaserror
+    - id: test
+      run: >-
+        dotnet test ./src/UnityNamespaceSuppressor.Tests
+        --configuration Release --no-build --framework net10.0
+        --collect "XPlat Code Coverage"
+        --settings src/UnityNamespaceSuppressor.Tests/coverage.runsettings
+        --results-directory artifacts/test-results
+    - name: Pack analyzer
+      run: dotnet pack ./src/UnityNamespaceSuppressor --configuration Release --no-build --output artifacts/packages
+    - name: Generate coverage report
+      if: ${{ !cancelled() && steps.test.outcome != 'skipped' && steps.test.outcome != '' }}
+      run: |
+        dotnet tool install --global dotnet-reportgenerator-globaltool
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        reportgenerator "-reports:artifacts/test-results/**/coverage.cobertura.xml" "-targetdir:artifacts/coverage" "-reporttypes:Html;MarkdownSummaryGithub"
+    - name: Publish coverage summary
+      if: ${{ !cancelled() && hashFiles('artifacts/coverage/SummaryGithub.md') != '' }}
+      shell: pwsh
+      run: Get-Content artifacts/coverage/SummaryGithub.md -Raw -Encoding utf8 | Add-Content $env:GITHUB_STEP_SUMMARY -Encoding utf8
+    # ghasec-ignore: unpinned-action
+    - uses: AndanteTribe/Actions/actions/upload-artifact@main # zizmor: ignore[unpinned-uses] repository-local action reference is intentionally tracked on @main
+      if: ${{ !cancelled() && steps.test.outcome != 'skipped' && steps.test.outcome != '' }}
+      with:
+        name: test-results-coverage-and-packages
+        path: |
+          artifacts/test-results
+          artifacts/coverage
+          artifacts/packages
+        if-no-files-found: error
