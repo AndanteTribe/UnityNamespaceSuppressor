@@ -166,6 +166,18 @@ public class UnityNamespaceSuppressorTests
         Assert.False(Assert.Single(diagnostics).IsSuppressed);
     }
 
+    [Fact]
+    public async Task SyntaxTreeOptionsWithoutSettings_UsesDefaultSuppression()
+    {
+        var diagnostics = await SuppressorTest.RunAsync([
+            "namespace Game { public class Player : UnityEngine.MonoBehaviour { } }",
+            "namespace Game { public class Plain { } }"
+        ], useSyntaxTreeOptions: true);
+        Assert.Equal(2, diagnostics.Length);
+        Assert.True(diagnostics.Single(static diagnostic => diagnostic.Location.SourceTree!.FilePath == "Test0.cs").IsSuppressed);
+        Assert.False(diagnostics.Single(static diagnostic => diagnostic.Location.SourceTree!.FilePath == "Test1.cs").IsSuppressed);
+    }
+
     [Theory]
     [InlineData("none", false)]
     [InlineData("NONE", false)]

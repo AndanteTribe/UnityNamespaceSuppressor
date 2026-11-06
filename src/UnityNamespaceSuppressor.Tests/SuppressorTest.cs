@@ -36,7 +36,8 @@ internal static class SuppressorTest
             });
         if (useSyntaxTreeOptions)
         {
-            options = options.WithSyntaxTreeOptionsProvider(new SuppressionOptionsProvider(suppressionSettings!));
+            options = options.WithSyntaxTreeOptionsProvider(new SuppressionOptionsProvider(
+                suppressionSettings ?? ImmutableDictionary<string, string>.Empty));
         }
         var compilation = CSharpCompilation.Create("Tests", trees,
             references.IsDefault ? UnityReferences.All : references, options);
