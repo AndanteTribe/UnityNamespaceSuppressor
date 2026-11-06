@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/UnityNamespaceSuppressor.Sample/UnityNamespaceSuppressor.Sample.csproj" />
+  <Project Path="src/UnityNamespaceSuppressor.Tests/UnityNamespaceSuppressor.Tests.csproj" />
+  <Project Path="src/UnityNamespaceSuppressor/UnityNamespaceSuppressor.csproj" />
+</Solution>
