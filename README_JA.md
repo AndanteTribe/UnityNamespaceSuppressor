@@ -6,7 +6,7 @@
 
 **UnityNamespaceSuppressor** は、通常の型にはファイルスコープ名前空間を推奨しつつ、**MonoBehaviour／ScriptableObject／ScriptedImporter 派生クラスにはブロック形式の名前空間を許可する** C# Roslyn `DiagnosticSuppressor` です。
 
-**Unity 2022.3.22f1（Windows、`-langversion:10`、Editor パッチなし）** では、ファイルスコープ名前空間でソースファイルと型の `MonoScript` による紐付けが失われます。コードから生成できても、保存した Unity オブジェクトを復元できない場合があります。本ライブラリは **IDE0161: ファイル スコープの名前空間に変換** を抑制し、対象のブロック形式を維持できるようにします。
+**Unity 2022.3以降**（`-langversion:10`）、ファイルスコープ名前空間使用時にソースファイルと型の `MonoScript` による紐付けが失われます。コードから生成できても、保存した Unity オブジェクトを復元できない場合があります。本ライブラリは **IDE0161: ファイル スコープの名前空間に変換** を抑制し、対象のブロック形式を維持できるようにします。
 
 ## インストール
 
