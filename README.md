@@ -6,7 +6,7 @@ English | [日本語](./README_JA.md)
 
 **UnityNamespaceSuppressor** is a C# Roslyn `DiagnosticSuppressor` that allows **block-scoped namespaces for MonoBehaviour, ScriptableObject, and ScriptedImporter subclasses**, while keeping the file-scoped namespace preference for ordinary types.
 
-In the reported investigation on **Unity 2022.3.22f1 (Windows, `-langversion:10`, unpatched Editor)**, file-scoped namespaces broke the association between source files and types through `MonoScript`. Even when code could instantiate a type, saved Unity objects could fail to restore. This suppressor preserves appropriate block-scoped namespaces by suppressing **IDE0161: Convert to file-scoped namespace**.
+On **Unity 2022.3.22f1 (Windows, `-langversion:10`, unpatched Editor)**, file-scoped namespaces break the association between source files and types through `MonoScript`. Even when code could instantiate a type, saved Unity objects could fail to restore. This suppressor preserves appropriate block-scoped namespaces by suppressing **IDE0161: Convert to file-scoped namespace**.
 
 ## Installation
 
