@@ -64,7 +64,7 @@ internal static class SuppressorTest
 
     private static DiagnosticAnalyzer LoadNamespaceAnalyzer()
     {
-        Assembly.LoadFrom(Path.Combine(AppContext.BaseDirectory, "Microsoft.CodeAnalysis.CodeStyle.dll"));
+        _ = Assembly.LoadFrom(Path.Combine(AppContext.BaseDirectory, "Microsoft.CodeAnalysis.CodeStyle.dll"));
         var assembly = Assembly.LoadFrom(Path.Combine(AppContext.BaseDirectory, "Microsoft.CodeAnalysis.CSharp.CodeStyle.dll"));
         var type = assembly.GetTypes().Single(static type => type.Name == "ConvertToFileScopedNamespaceDiagnosticAnalyzer");
         return (DiagnosticAnalyzer)Activator.CreateInstance(type, nonPublic: true)!;
